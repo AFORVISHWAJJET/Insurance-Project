@@ -2,7 +2,9 @@ import streamlit as st
 import pickle as pkl
 import pandas as pd
 
- 
+# ===========================================
+# Page Configuration
+# ===========================================
 
 st.set_page_config(
     page_title="Insurance Premium Prediction",
@@ -10,30 +12,46 @@ st.set_page_config(
     layout="centered"
 )
 
+# ===========================================
+# Load Trained Model
+# ===========================================
 
+try:
+    model = pkl.load(open("model.pkl", "rb"))
+except FileNotFoundError:
+    st.error("model.pkl not found. Please place model.pkl in the project folder.")
+    st.stop()
 
-model = pkl.load(open("model.pkl", "rb"))
-
+# ===========================================
+# Title
+# ===========================================
 
 st.title("🏥 Insurance Premium Prediction System")
-st.write("Enter the details below to predict the insurance charges.")
 
+st.write(
+    "Predict medical insurance charges using Machine Learning."
+)
+
+st.divider()
+
+# ===========================================
+# User Inputs
+# ===========================================
 
 age = st.number_input(
-    "Enter Age",
+    "Age",
     min_value=18,
     max_value=100,
-    value=25,
-    step=1
+    value=25
 )
 
 sex = st.selectbox(
-    "Select Gender",
-    ["male", "female"]
+    "Gender",
+    ("male", "female")
 )
 
 bmi = st.number_input(
-    "Enter BMI",
+    "BMI",
     min_value=10.0,
     max_value=60.0,
     value=25.0,
@@ -44,24 +62,29 @@ children = st.number_input(
     "Number of Children",
     min_value=0,
     max_value=10,
-    value=0,
-    step=1
+    value=0
 )
 
 smoker = st.selectbox(
     "Smoker",
-    ["yes", "no"]
+    ("yes", "no")
 )
 
 region = st.selectbox(
     "Region",
-    [
+    (
         "northeast",
         "northwest",
         "southeast",
         "southwest"
-    ]
+    )
 )
+
+st.divider()
+
+# ===========================================
+# Prediction
+# ===========================================
 
 if st.button("Predict Insurance Charges"):
 
@@ -91,5 +114,6 @@ if st.button("Predict Insurance Charges"):
         f"Predicted Insurance Charges: ₹ {prediction[0]:,.2f}"
     )
 
-    st.write("### Input Summary")
+    st.subheader("Input Summary")
+
     st.dataframe(df)
